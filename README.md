@@ -147,7 +147,7 @@ static void co_body(schedule_t *ps);
 ### 使用
 git clone 下来；
 
-然后可以看一下两个test
+然后 make 一下，出来test1 test2
 
 
 ### 关于改进
