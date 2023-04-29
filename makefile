@@ -1,3 +1,3 @@
 all:
-	g++ main.cpp coroutine.cpp -o app
-
+	g++ test1.cpp coroutine.cpp -o test1
+	g++ test2.cpp coroutine.cpp -o test2

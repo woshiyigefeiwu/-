@@ -61,3 +61,10 @@ void test1()    //测试一下循环嵌套调用协程的时候的正确性
 
     co_resume(schedule,co1);
 }
+
+int main()
+{
+    test1();
+
+    return 0;
+}

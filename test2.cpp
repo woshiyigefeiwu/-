@@ -32,3 +32,9 @@ void test2()    //测试一下在跨协程唤醒的正确性
     co_resume(schedule,co2);    //在其他的协程唤醒co2
 }
 
+int main()
+{
+    test2();
+
+    return 0;
+}
