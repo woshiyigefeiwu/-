@@ -87,6 +87,8 @@
 
 [从无栈协程到 C++异步框架](https://mp.weixin.qq.com/s/QVXE7QbxEchl8ue4SoijiQ)
 
+[微信终端自研C++协程框架的设计与实现](https://mp.weixin.qq.com/s/c17DaD7JbKlDFT6J8haEFw)
+
 [tinyrpc](https://github.com/Gooddbird/tinyrpc#4-%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B)
 
 [C++实现的协程异步 RPC 框架 TinyRPC（一）-- 协程封装](https://zhuanlan.zhihu.com/p/466349082)
