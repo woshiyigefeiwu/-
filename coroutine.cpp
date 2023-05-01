@@ -1,3 +1,6 @@
+// #ifndef COROUTINE_CPP
+// #define COROUTINE_CPP
+
 #include "coroutine.h"
 #include <stdio.h>
 #include <iostream>
@@ -20,19 +23,16 @@ void co_resume(schedule_t &schedule , int id)
         // 如果当前是就绪态，也就是第一次，那么给这个协程设置上下文信息
         case RUNNABLE:  
 
-            getcontext(&(t->ctx));  // 获取当前上下文到 t->ctx 中
+            getcontext(&(t->ctx));              // 获取当前上下文到 t->ctx 中
             t->ctx.uc_stack.ss_sp = t->stack;   //指定栈空间
             t->ctx.uc_stack.ss_size = DEFAULT_STACK_SZIE;   // 指定栈空间大小
             t->ctx.uc_stack.ss_flags = 0;
-            // t->ctx.uc_link = &(schedule.main);  // 设置当前协程的后继上下文
             t->ctx.uc_link = &(t->fa_co->ctx);  //设置当前协程的后继上下文是父协程的上下文
-            t->state = RUNNING;     // 将当前协程状态设置为运行态
+            t->state = RUNNING;                 // 将当前协程状态设置为运行态
 
             //这里需要特别注意：要设置要唤醒协程的父协程的信息！！！
             t->fa_co->id = schedule.running_thread; //设置 要唤醒的协程 的父协程id！
-            // cout<<t->fa_co->id<<"###\n";
-
-            schedule.running_thread = id;   // 注意逻辑，这里要先设置父协程信息，在修改调度器中的信息，设置当前正在运行的协程id
+            schedule.running_thread = id;           // 注意逻辑，这里要先设置父协程信息，在修改调度器中的信息，设置当前正在运行的协程id
 
             /*
                 函数：void makecontext(ucontext_t *ucp, void (*func)(), int argc, ...)
@@ -51,7 +51,6 @@ void co_resume(schedule_t &schedule , int id)
             
                 就是把当前上下文环境保存到oucp，然后把ucp的上下文环境放到cpu上执行。
             */
-            // swapcontext(&(schedule.main), &(t->ctx));
             swapcontext(&(t->fa_co->ctx),&(t->ctx));    //把当前的上下文保存到他父协程的上下文中,运行当前协程的上下文
 
             break;
@@ -61,11 +60,9 @@ void co_resume(schedule_t &schedule , int id)
 
             //这里也要设置！！！为的就是在主线程事件循环中唤醒
             t->fa_co->id = schedule.running_thread; //设置 要唤醒的协程 的父协程id！
-
-            schedule.running_thread = id;   // 注意逻辑，这里要先设置父协程信息，在修改调度器中的信息，设置当前正在运行的协程id
+            schedule.running_thread = id;           // 注意逻辑，这里要先设置父协程信息，在修改调度器中的信息，设置当前正在运行的协程id
             t->state = RUNNING;
 
-            // swapcontext(&(schedule.main),&(t->ctx));
             swapcontext(&(t->fa_co->ctx),&(t->ctx));
 
             break;
@@ -90,13 +87,8 @@ void co_yield(schedule_t &schedule)
         coroutine *t = &(schedule.coroutine_pool[schedule.running_thread]);
 
         t->state = SUSPEND;
-
-        // schedule.running_thread = -1;
-        schedule.running_thread = t->fa_co->id; //切回当前协程的父协程
-
-        // 保存上下文到 t->ctx，切换到主协程
-        // swapcontext(&(t->ctx),&(schedule.main));
-        swapcontext(&(t->ctx),&(t->fa_co->ctx));    //运行父协程的上下文环境
+        schedule.running_thread = t->fa_co->id;     //切回当前协程的父协程
+        swapcontext(&(t->ctx),&(t->fa_co->ctx));    //将上下文保存，运行父协程的上下文环境
     }
     else
     {
@@ -115,10 +107,9 @@ void co_body(schedule_t *ps)
 
         t->func(t->arg);    //执行函数，中间可能会被挂起
 
-        //走到这里表示协程执行完成了,切回父协程
-        //这里需要处理一下
+        //走到这里表示协程执行完成了，切回父协程（这里需要处理一下）
         t->state = FREE;
-        ps->running_thread = t->fa_co->id;  //切回父协程，调度器正在运行的协程编号为父协程的编号
+        ps->running_thread = t->fa_co->id;
     }
 }
 
@@ -141,10 +132,10 @@ int co_create(schedule_t &schedule,Fun func,void *arg)
     coroutine *t = &(schedule.coroutine_pool[id]); // 当前协程
 
     t->state = RUNNABLE;    // 创建完当前状态为就绪态
-    t->func = func;     // 绑定函数
-    t->arg = arg;   // 函数的参数
+    t->func = func;         // 绑定函数
+    t->arg = arg;           // 函数的参数
 
-    return id;  // 返回协程的编号
+    return id;              // 返回协程的编号
 }
 
 // 判断schedule中是否有协程没运行完，是返回1，否则返回0
@@ -165,3 +156,5 @@ int schedule_finished(const schedule_t &schedule)
 
     return 1;
 }
+
+// #endif
