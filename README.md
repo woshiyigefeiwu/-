@@ -361,11 +361,13 @@ void add_event(co_event *event,co_event_base *base,EPOLL_EVENTS ty);
 7. 编码方面不够规范...
 
 8. 改进
+
 &emsp; &emsp; &emsp; &emsp; 由于我们在创建协程的时候是在协程数组里面找一个空闲的位置分给协程，这样的话时间复杂度就比较高；
 
 &emsp; &emsp; &emsp; &emsp; 我们可以参考 LRU 的改进算法：
 
 &emsp; &emsp; &emsp; &emsp; 维护两条协程链表，一条是创建好的协程（活跃链表），一条是空闲链表；
+
 &emsp; &emsp; &emsp; &emsp; （当然这里还需要对 协程的编号 以及 协程体这个节点 做一个双向映射）
 	
 &emsp; &emsp; &emsp; &emsp; 当我们创建协程的时候，直接在空闲链表里面取一个空闲节点；初始化 并 加入到第一条链表就行；
